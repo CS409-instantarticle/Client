@@ -5,13 +5,17 @@ package com.example.rho_eojin1.a409_prototype13;
  */
 
 public class ContentListElement {
+    private int index;
     private String type;
     private String content;
 
-    public ContentListElement(String type, String content){
+    public ContentListElement(int index, String type, String content){
+        this.index = index;
         this.type = type;
         this.content = content;
     }
+
+    public int getIndex() { return this.index;}
 
     public String getType(){
         return this.type;

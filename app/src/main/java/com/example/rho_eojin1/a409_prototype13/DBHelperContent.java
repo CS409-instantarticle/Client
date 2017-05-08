@@ -89,6 +89,8 @@ public class DBHelperContent extends SQLiteOpenHelper {
         String selection = this.ARTICLEID + " = ?";
         String[] selectionArgs = { articleID };
 
+        String sortOrder = this.ARTICLEINDEX + " ASC";
+
         return db.query(
                 this.TABLE_NAME,                     // The table to query
                 projection,                               // The columns to return
@@ -96,7 +98,7 @@ public class DBHelperContent extends SQLiteOpenHelper {
                 selectionArgs,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
-                null                                // The sort order
+                sortOrder                                // The sort order
         );
     }
 }
