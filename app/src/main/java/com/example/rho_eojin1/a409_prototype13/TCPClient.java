@@ -91,8 +91,8 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
             outputStream.write(header, 0, 8);
 
             /* Send a file name and a directory name(date) */
-            outputStream.write("2017-05-14 19_04".getBytes(), 0, 16);
-            outputStream.write("0003823902".getBytes(), 0, 10);
+            outputStream.write("2017-05-14 18_59".getBytes(), 0, 16);
+            outputStream.write("0000202942".getBytes(), 0, 10);
 
             /* Get server response (read header first) */
             int readByte = inputStream.read(header, 0, 8);
@@ -126,7 +126,6 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
     protected void onPostExecute(Void aVoid) {
         Log.e("TCPClient", result);
 
-
         String tmpJSONstr = String.valueOf(result);
 
         JSONArray tmpJSONArray;
@@ -144,7 +143,7 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
         dbHelperContent.onUpgrade(dbContent, 1, 1);
 
         try {
-            tmpJSONArray = new JSONArray(tmpJSONstr);
+            tmpJSONArray = new JSONArray("[" + tmpJSONstr + "]");
             Log.e("Jsontest",tmpJSONArray.getJSONObject(0).getString("ArticleTitle"));
 
             long rowID;
@@ -167,7 +166,6 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
                         JSONArray contentsArray = oneArticle.getJSONArray(dbHelper.CONTENTS);
                         Log.e("Jsontest2",contentsArray.getJSONObject(0).getString("ArticleType"));
                         Log.e("Jsontest2",contentsArray.toString());
-
 
                         if (contentsArray != null){
                             int contents_size = contentsArray.length();
