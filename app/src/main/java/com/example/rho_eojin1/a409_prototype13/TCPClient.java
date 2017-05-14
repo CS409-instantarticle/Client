@@ -54,19 +54,21 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
         this.context = context;
         this.Host = Host;
         this.port = port;
-        try {
-            this.socket = new Socket(this.Host, this.port);
-            this.inputStream = socket.getInputStream();
-            this.outputStream = socket.getOutputStream();
-        }
-        catch(java.io.IOException e)
-        {
-            /* Do nothing */
-        }
     }
 
     protected Void doInBackground(Void... voids) {
         try{
+            /* Create new socket */
+            try {
+                this.socket = new Socket(this.Host, this.port);
+                this.inputStream = socket.getInputStream();
+                this.outputStream = socket.getOutputStream();
+            }
+            catch(java.io.IOException e)
+            {
+            /* Do nothing */
+            }
+
             /* Protocol header declaration */
             byte[] header = new byte[8];
 
@@ -98,20 +100,19 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
             length = swap_endian(ByteBuffer.wrap(lengthToByte).getInt());
 
             /* Get server response (read payload) */
+            byte[] json_buffer = new byte[length];
             int readOffset = 0;
 
-
-            StringBuilder builder = new StringBuilder(); //문자열을 담기 위한 객체
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is,"UTF-8")); //문자열 셋 세팅
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                builder.append(line+ "\n");
+            Log.d("result", Integer.toString(length));
+            while(readOffset < length)
+            {
+                int read_amount = inputStream.read(json_buffer, readOffset, length - readOffset);
+                /* Break if read amount <= -1, but not yet implemented */
+                readOffset += read_amount;
             }
 
-            result = builder.toString();
-            //Log.e("Builder", builder.toString());
-
+            result = new String(json_buffer);
+            Log.d("result", result);
 
         }catch(MalformedURLException | ProtocolException exception) {
             exception.printStackTrace();

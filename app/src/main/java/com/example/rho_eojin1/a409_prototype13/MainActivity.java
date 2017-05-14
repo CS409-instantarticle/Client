@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        HttpClient newClient = new HttpClient(getApplicationContext(), "http://192.249.31.219:3000/posts");
+        //HttpClient newClient = new HttpClient(getApplicationContext(), "http://192.249.31.219:3000/posts");
+        TCPClient newClient = new TCPClient(getApplicationContext(), "110.76.96.53", 3124);
         newClient.execute();
 
         List<String> sec_names = new ArrayList<>();
