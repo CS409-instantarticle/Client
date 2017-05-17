@@ -31,6 +31,7 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
+        Log.e("Thread_Often","True");
         if (file != null) {
             imageView.setImageURI(Uri.fromFile(file));
         }

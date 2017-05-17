@@ -79,7 +79,7 @@ public class MainFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 MainListElement clickedElement = (MainListElement) adapterView.getAdapter().getItem(position);
                 String ID = clickedElement.getArticleID();
-                Intent intent = new Intent(rootView.getContext(), ContentActivity.class);
+                Intent intent = new Intent(rootView.getContext(), ContentActivity2.class);
                 Log.e("intent_called","sd");
                 intent.putExtra("ArticleID",ID);
 

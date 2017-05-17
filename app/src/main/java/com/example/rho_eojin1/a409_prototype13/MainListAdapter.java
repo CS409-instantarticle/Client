@@ -1,6 +1,7 @@
 package com.example.rho_eojin1.a409_prototype13;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +39,17 @@ public class MainListAdapter extends ArrayAdapter<MainListElement> {
             textView1 = (TextView) v.findViewById(R.id.textView1);
             textView2 = (TextView) v.findViewById(R.id.textView2);
             if (imageView != null){
-                final String image_URL = p.getThumbnail();
-                ThumbnailTask thumbnailTask = new ThumbnailTask(context, imageView);
-                thumbnailTask.execute(image_URL);
+                String tag = (String) imageView.getTag();
+                if (tag.equals("false")) {
+                //if (true){
+                    Log.e("Expected","true");
+                    final String image_URL = p.getThumbnail();
+                    ThumbnailTask thumbnailTask = new ThumbnailTask(context, imageView);
+                    thumbnailTask.execute(image_URL);
+                    imageView.setTag("true");
+                }else {
+                    Log.e("Expected","false");
+                }
             }
             if (textView1 != null){
                 textView1.setText(p.getTitle());
