@@ -34,6 +34,8 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
         Log.e("Thread_Often","True");
         if (file != null) {
             imageView.setImageURI(Uri.fromFile(file));
+        }else {
+            imageView.setImageResource(R.drawable.ic_launcher);
         }
     }
 

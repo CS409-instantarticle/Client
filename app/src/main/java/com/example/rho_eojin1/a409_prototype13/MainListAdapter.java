@@ -39,17 +39,11 @@ public class MainListAdapter extends ArrayAdapter<MainListElement> {
             textView1 = (TextView) v.findViewById(R.id.textView1);
             textView2 = (TextView) v.findViewById(R.id.textView2);
             if (imageView != null){
-                String tag = (String) imageView.getTag();
-                if (tag.equals("false")) {
-                //if (true){
-                    Log.e("Expected","true");
-                    final String image_URL = p.getThumbnail();
-                    ThumbnailTask thumbnailTask = new ThumbnailTask(context, imageView);
-                    thumbnailTask.execute(image_URL);
-                    imageView.setTag("true");
-                }else {
-                    Log.e("Expected","false");
-                }
+                //Log.e("ImageTitle",p.getTitle());
+                //Log.e("ImageThumbnail",p.getThumbnail());
+                final String image_URL = p.getThumbnail();
+                ThumbnailTask thumbnailTask = new ThumbnailTask(context, imageView);
+                thumbnailTask.execute(image_URL);
             }
             if (textView1 != null){
                 textView1.setText(p.getTitle());
