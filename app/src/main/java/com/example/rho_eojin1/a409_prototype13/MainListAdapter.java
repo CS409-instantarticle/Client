@@ -39,6 +39,7 @@ public class MainListAdapter extends ArrayAdapter<MainListElement> {
             textView1 = (TextView) v.findViewById(R.id.textView1);
             textView2 = (TextView) v.findViewById(R.id.textView2);
             if (imageView != null){
+                imageView.setImageResource(R.drawable.ic_launcher);
                 //Log.e("ImageTitle",p.getTitle());
                 //Log.e("ImageThumbnail",p.getThumbnail());
                 final String image_URL = p.getThumbnail();
