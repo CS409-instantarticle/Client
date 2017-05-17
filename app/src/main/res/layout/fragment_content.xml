@@ -10,6 +10,8 @@
 
     <ListView
         android:id="@+id/listView2"
+        android:dividerHeight="0px"
+        android:divider="#ffffff"
         android:layout_width="368dp"
         android:layout_height="495dp"
         android:layout_alignParentLeft="true"

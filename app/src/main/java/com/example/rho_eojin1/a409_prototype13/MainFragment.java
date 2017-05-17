@@ -51,14 +51,12 @@ public class MainFragment extends Fragment {
         DBHelperMain dbHelperMain = DBHelperMain.getInstance(this.context);
 
         SQLiteDatabase dbMain = dbHelperMain.getReadableDatabase();
-        /*
+
         if (sectionName.equals("홈")) {
-            Log.e("HomeMust","True");
-            cursor = dbHelperMain.selectSection(dbMain, "None");
+            cursor = dbHelperMain.selectAll(dbMain);
         }else {
             cursor = dbHelperMain.selectSection(dbMain, sectionName);
-        }*/
-        cursor =dbHelperMain.selectAll(dbMain);
+        }
 
         int i = 0;
         if (cursor.moveToFirst()) {
@@ -81,7 +79,7 @@ public class MainFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 MainListElement clickedElement = (MainListElement) adapterView.getAdapter().getItem(position);
                 String ID = clickedElement.getArticleID();
-                Intent intent = new Intent(rootView.getContext(), ContentActivity2.class);
+                Intent intent = new Intent(rootView.getContext(), ContentActivity.class);
                 Log.e("intent_called","sd");
                 intent.putExtra("ArticleID",ID);
 
