@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import java.util.ArrayList;
 
@@ -36,39 +37,37 @@ public class ContentListAdapter extends ArrayAdapter<ContentListElement> {
         ContentListElement p = contents.get(position);
 
         if (p != null) {
-            //textView = (TextView) v.findViewById(R.id.textView3);
-            //imageView = (ImageView) v.findViewById(R.id.imageView2);
-            //videoView = (VideoView) v.findViewById(R.id.videoView);
+            TextView textView = (TextView) v.findViewById(R.id.textView3);
+            ImageView imageView = (ImageView) v.findViewById(R.id.imageView2);
+            VideoView videoView = (VideoView) v.findViewById(R.id.videoView1);
             LinearLayout ll = (LinearLayout)v.findViewById(R.id.linearLayout);
 
             if (p.getType().equals("text")) {
-                TextView textView = new TextView(getContext());
+                /*TextView textView = new TextView(getContext());
                 ll.addView(textView);
-                Log.e("Debug_Sev",p.getContent());
+                Log.e("Debug_Sev",p.getContent())*/;
                 textView.setText(p.getContent());
+                imageView.setVisibility(View.GONE);
+                videoView.setVisibility(View.GONE);
                 //imageView.setEnabled(false);
                 //videoView.setEnabled(false);
             } else if (p.getType().equals("image")) {
-                ImageView imageView = new ImageView(getContext());
+                /*ImageView imageView = new ImageView(getContext());
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                ll.addView(imageView);
+                ll.addView(imageView);*/
                 final String image_URL = p.getContent();
                 ThumbnailTask thumbnailTask = new ThumbnailTask(context, imageView);
                 thumbnailTask.execute(image_URL);
+                textView.setVisibility(View.GONE);
+                videoView.setVisibility(View.GONE);
+                //textView.setEnabled(false);
+                //videoView.setEnabled(false);
             } else {
                 //textView.setEnabled(false);
                 //imageView.setEnabled(false);
                 //videoView = (VideoView) v.findViewById(R.id.videoView);
             }
         }
-
-        /*
-        if(position%2 == 0){
-            v.setBackgroundColor(0x00FFFFFF);
-        }
-        else{
-            v.setBackgroundColor(0x00FFFFFF);
-        }*/
 
         return v;
     }

@@ -47,6 +47,9 @@ public class CacheMediaTask extends AsyncTask<String, Void, Void> {
             urlConnection.connect();
 
             String fileName = Uri.parse(image_URL).getLastPathSegment();
+            if(fileName.equals("None")){
+                return null;
+            }
 
             File file = new File(this.context.getCacheDir(), fileName);
             Log.e("fileName", file.getAbsolutePath());

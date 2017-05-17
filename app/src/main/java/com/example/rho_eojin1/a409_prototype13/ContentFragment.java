@@ -46,6 +46,7 @@ public class ContentFragment extends Fragment {
         content_list = new ArrayList<ContentListElement>();
 
         content_list_view = (ListView) rootView.findViewById(R.id.listView2);
+        content_list_view.setDivider(null);
         content_list_adapter = new ContentListAdapter(rootView.getContext(), R.layout.content_list_element, content_list);
         content_list_adapter.notifyDataSetInvalidated();
         content_list_view.setAdapter(content_list_adapter);

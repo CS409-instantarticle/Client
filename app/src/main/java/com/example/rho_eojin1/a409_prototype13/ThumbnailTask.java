@@ -21,7 +21,7 @@ import java.net.URL;
 public class ThumbnailTask extends AsyncTask<String, Void, Void> {
     private Context context;
     private ImageView imageView;
-    File file;
+    File file = null;
 
     public ThumbnailTask(Context context, ImageView imageView){
         this.context = context;
@@ -31,7 +31,9 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
-        imageView.setImageURI(Uri.fromFile(file));
+        if (file != null) {
+            imageView.setImageURI(Uri.fromFile(file));
+        }
     }
 
     @Override
@@ -42,6 +44,10 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
     protected Void doInBackground(String... urls) {
         String image_URL = urls[0];
         String fileName = Uri.parse(image_URL).getLastPathSegment();
+        if (fileName.equals("None")){
+            return null;
+        }
+
         file = new File(this.context.getCacheDir(), fileName);
         Log.e("fileName", file.getAbsolutePath());
         if (file.exists()){
