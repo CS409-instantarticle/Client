@@ -102,6 +102,28 @@ public class DBHelperMain extends SQLiteOpenHelper {
         );
     }
 
+    public Cursor selectSectionIndex(SQLiteDatabase db, String section, int min_index, int max_index){
+        String[] projection = {
+                this.ARTICLE_MAIN_INDEX,
+                this.ARTICLEID,
+                this.ARTICLETITLE,
+                this.PRESS,
+                this.THUMBNAILIMAGEURL,
+                this.LINK,
+                this.SECTIONNAME
+        };
+
+        return db.query(
+                this.TABLE_NAME,                     // The table to query
+                projection,                               // The columns to return
+                this.SECTIONNAME + " = '" + section + "' AND " + this.ARTICLE_MAIN_INDEX + " >= " + String.valueOf(min_index) + " AND " + this.ARTICLE_MAIN_INDEX + " <= " + String.valueOf(max_index),
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                // The sort order
+        );
+    }
+
     public Cursor selectListElement(SQLiteDatabase db){
         String[] projection = {
                 this.ARTICLEID,

@@ -33,13 +33,13 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
     String strUrl;
     String result;
     boolean initial;
-    MainListAdapter main_list_adapter;
+    MainFragment main_fragment;
 
-    HttpClient(Context context, String strUrl, boolean initial, MainListAdapter main_list_adapter) {
+    HttpClient(Context context, String strUrl, boolean initial, MainFragment main_fragment) {
         this.context = context;
         this.strUrl = strUrl; //탐색하고 싶은 URL이다.
         this.initial = initial;
-        this.main_list_adapter = main_list_adapter;
+        this.main_fragment = main_fragment;
         Log.e("called","Now");
         //this.main_list = main_list;
     }
@@ -47,7 +47,6 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
     }
 
     protected Void doInBackground(Void... voids) {
@@ -122,7 +121,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                     if (oneArticle != null) {
                         ContentValues values = new ContentValues();
                         values.put(dbHelper.ARTICLEID, oneArticle.getString(dbHelper.ARTICLEID));
-                        values.put(dbHelper.ARTICLE_MAIN_INDEX, oneArticle.getString(dbHelper.ARTICLE_MAIN_INDEX));
+                        values.put(dbHelper.ARTICLE_MAIN_INDEX, Integer.parseInt(oneArticle.getString(dbHelper.ARTICLE_MAIN_INDEX)));
                         values.put(dbHelper.ARTICLETITLE, oneArticle.getString(dbHelper.ARTICLETITLE));
                         values.put(dbHelper.PRESS, oneArticle.getString(dbHelper.PRESS));
                         values.put(dbHelper.THUMBNAILIMAGEURL, oneArticle.getString(dbHelper.THUMBNAILIMAGEURL));
@@ -168,8 +167,8 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
             e.printStackTrace();
         }
 
-        if(main_list_adapter != null)
-            main_list_adapter.notifyDataSetChanged();
+        main_fragment.max_index += 30;
+        main_fragment.UpdateList();
 
         super.onPostExecute(aVoid);
     }

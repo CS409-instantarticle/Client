@@ -29,7 +29,9 @@ public class MainFragment extends Fragment {
     ArrayList<MainListElement> main_list;
     String sectionName;
     Context context;
-    int last_requested = 1;
+    int last_requested = 0;
+    int min_index = 0;
+    static int max_index = -1;
 
     public MainFragment(Context context, String sectionName) {
         this.context = context;
@@ -37,26 +39,23 @@ public class MainFragment extends Fragment {
         main_list = new ArrayList<MainListElement>();
     }
 
-    @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        main_list_view = (ListView) rootView.findViewById(R.id.listView);
-        main_list_adapter = new MainListAdapter(rootView.getContext(), R.layout.main_list_element, main_list);
-        main_list_view.setAdapter(main_list_adapter);
-
+    public void UpdateList()
+    {
         DBHelperMain dbHelperMain = DBHelperMain.getInstance(this.context);
-
         SQLiteDatabase dbMain = dbHelperMain.getReadableDatabase();
-
         Cursor cursor;
 
         if (sectionName.equals("홈")) {
-            cursor = dbHelperMain.selectAll(dbMain);
+            cursor = dbHelperMain.selectIndex(dbMain, min_index, max_index);
         } else {
-            cursor = dbHelperMain.selectSection(dbMain, sectionName);
+            cursor = dbHelperMain.selectSectionIndex(dbMain, sectionName, min_index, max_index);
         }
+
+        if(min_index < max_index)
+            min_index = max_index + 1;
+        else
+            return;
+
         cursor.moveToFirst();
 
         while (!cursor.isAfterLast()) {
@@ -70,7 +69,19 @@ public class MainFragment extends Fragment {
             cursor.moveToNext();
         }
 
-        cursor.close();
+        if(main_list_adapter != null)
+            main_list_adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        UpdateList();
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        main_list_view = (ListView) rootView.findViewById(R.id.listView);
+        main_list_adapter = new MainListAdapter(rootView.getContext(), R.layout.main_list_element, main_list);
+        main_list_view.setAdapter(main_list_adapter);
 
         main_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,11 +101,11 @@ public class MainFragment extends Fragment {
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
                 Log.e("SKT",String.valueOf(i) + "," + String.valueOf(i1) + "," + String.valueOf(i2));
-                if(i == i2 - 6 && last_requested < 1 + i2) {
-                    HttpClient newClient = new HttpClient(context, "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(1 + i2), false, main_list_adapter);
+                if(i == i2 - i1 && last_requested < i2 / 30 && i2 % 30 == 0) {
+                    HttpClient newClient = new HttpClient(context, "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf((last_requested + 1) * 30), false, MainFragment.this);
                     newClient.execute();
-                    last_requested = 1 + i2;
-                    Log.e("AKT",String.valueOf(i) + "," + String.valueOf(i1) + "," + String.valueOf(i2));
+                    last_requested += 1;
+                    Log.e("AKT",String.valueOf(i) + "," + String.valueOf(i1) + "," + String.valueOf(i2) + "," + String.valueOf(max_index));
                 }
             }
         });

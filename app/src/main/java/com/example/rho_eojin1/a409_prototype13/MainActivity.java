@@ -59,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        HttpClient newClient = new HttpClient(getApplicationContext(), "http://imgeffect.kaist.ac.kr:1234/ArticleList/1", true, null);
-        newClient.execute();
-
         List<String> sec_names = new ArrayList<>();
         sec_names.add("홈");
         sec_names.add("정치");
@@ -75,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Init_section", sec_names.get(i));
             MainFragment newFrag = new MainFragment(getApplicationContext(), sec_names.get(i));
             mSectionsPagerAdapter.addFragment(newFrag, sec_names.get(i));
+
+            if(i == 0)
+            {
+                HttpClient newClient = new HttpClient(getApplicationContext(), "http://imgeffect.kaist.ac.kr:1234/ArticleList/0", true, newFrag);
+                newClient.execute();
+            }
         }
 
         // Set up the ViewPager with the sections adapter.
