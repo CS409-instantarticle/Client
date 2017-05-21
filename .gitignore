@@ -1,0 +1,8 @@
+# Ignore pycache folder
+__pycache__/
+# Ignore crawled data
+NewsList*/
+articles/
+# Ignore temporal files
+*.txt
+*.pyc
