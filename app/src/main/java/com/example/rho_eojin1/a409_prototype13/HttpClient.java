@@ -32,10 +32,14 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
     Context context;
     String strUrl;
     String result;
+    boolean initial;
+    MainListAdapter main_list_adapter;
 
-    HttpClient(Context context, String strUrl) {
+    HttpClient(Context context, String strUrl, boolean initial, MainListAdapter main_list_adapter) {
         this.context = context;
         this.strUrl = strUrl; //탐색하고 싶은 URL이다.
+        this.initial = initial;
+        this.main_list_adapter = main_list_adapter;
         Log.e("called","Now");
         //this.main_list = main_list;
     }
@@ -92,13 +96,15 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        dbHelper.onUpgrade(db, 1, 1);
+        if(this.initial)
+            dbHelper.onUpgrade(db, 1, 1);
 
         DBHelperContent dbHelperContent = DBHelperContent.getInstance(context);
 
         SQLiteDatabase dbContent = dbHelperContent.getWritableDatabase();
 
-        dbHelperContent.onUpgrade(dbContent, 1, 1);
+        if(this.initial)
+            dbHelperContent.onUpgrade(dbContent, 1, 1);
 
         try {
             tmpJSONArray = new JSONArray(tmpJSONstr);
@@ -160,6 +166,9 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        if(main_list_adapter != null)
+            main_list_adapter.notifyDataSetChanged();
 
         super.onPostExecute(aVoid);
     }

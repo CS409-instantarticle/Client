@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -28,6 +29,7 @@ public class MainFragment extends Fragment {
     ArrayList<MainListElement> main_list;
     String sectionName;
     Context context;
+    int last_requested = 1;
 
     public MainFragment(Context context, String sectionName) {
         this.context = context;
@@ -82,6 +84,21 @@ public class MainFragment extends Fragment {
                 Log.e("intent_called","sd");
                 intent.putExtra("ArticleID",ID);
                 startActivity(intent);
+            }
+        });
+
+        main_list_view.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {}
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+                Log.e("SKT",String.valueOf(i) + "," + String.valueOf(i1) + "," + String.valueOf(i2));
+                if(i == i2 - 6 && last_requested < 1 + i2) {
+                    HttpClient newClient = new HttpClient(context, "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(1 + i2), false, main_list_adapter);
+                    newClient.execute();
+                    last_requested = 1 + i2;
+                    Log.e("AKT",String.valueOf(i) + "," + String.valueOf(i1) + "," + String.valueOf(i2));
+                }
             }
         });
 
