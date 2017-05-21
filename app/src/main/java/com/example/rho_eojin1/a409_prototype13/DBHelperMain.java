@@ -18,6 +18,7 @@ public class DBHelperMain extends SQLiteOpenHelper {
     public static final String TABLE_NAME = "main_table";
     public static final String ARTICLEID = "ArticleID";
     public static final String ARTICLETITLE = "ArticleTitle";
+    public static final String ARTICLE_MAIN_INDEX = "ArticleMainIndex";
     public static final String PRESS = "Press";
     public static final String THUMBNAILIMAGEURL = "ThumbnailImageURL";
     public static final String LINK = "Link";
@@ -39,12 +40,14 @@ public class DBHelperMain extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
+                ARTICLE_MAIN_INDEX + " INTEGER PRIMARY KEY," +
                 ARTICLEID + " TEXT," +
                 ARTICLETITLE + " TEXT," +
                 PRESS + " TEXT," +
                 THUMBNAILIMAGEURL + " TEXT," +
                 LINK + " TEXT," +
-                SECTIONNAME + " TEXT" + " )");
+                SECTIONNAME + " TEXT" + " );" +
+                "CREATE INDEX article_index_ ON " + TABLE_NAME + " ("+ ARTICLE_MAIN_INDEX + ");");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -57,6 +60,7 @@ public class DBHelperMain extends SQLiteOpenHelper {
 
     public Cursor selectAll(SQLiteDatabase db){
         String[] projection = {
+                this.ARTICLE_MAIN_INDEX,
                 this.ARTICLEID,
                 this.ARTICLETITLE,
                 this.PRESS,
@@ -69,6 +73,28 @@ public class DBHelperMain extends SQLiteOpenHelper {
                 this.TABLE_NAME,                     // The table to query
                 projection,                               // The columns to return
                 null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                // The sort order
+        );
+    }
+
+    public Cursor selectIndex(SQLiteDatabase db, int min_index, int max_index){
+        String[] projection = {
+                this.ARTICLE_MAIN_INDEX,
+                this.ARTICLEID,
+                this.ARTICLETITLE,
+                this.PRESS,
+                this.THUMBNAILIMAGEURL,
+                this.LINK,
+                this.SECTIONNAME
+        };
+
+        return db.query(
+                this.TABLE_NAME,                     // The table to query
+                projection,                               // The columns to return
+                this.ARTICLE_MAIN_INDEX + " >= " + String.valueOf(min_index) + " AND " + this.ARTICLE_MAIN_INDEX + " <= " + String.valueOf(max_index),
                 null,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups

@@ -122,6 +122,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                     if (oneArticle != null) {
                         ContentValues values = new ContentValues();
                         values.put(dbHelper.ARTICLEID, oneArticle.getString(dbHelper.ARTICLEID));
+                        values.put(dbHelper.ARTICLE_MAIN_INDEX, oneArticle.getString(dbHelper.ARTICLE_MAIN_INDEX));
                         values.put(dbHelper.ARTICLETITLE, oneArticle.getString(dbHelper.ARTICLETITLE));
                         values.put(dbHelper.PRESS, oneArticle.getString(dbHelper.PRESS));
                         values.put(dbHelper.THUMBNAILIMAGEURL, oneArticle.getString(dbHelper.THUMBNAILIMAGEURL));

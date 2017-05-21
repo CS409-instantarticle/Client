@@ -83,11 +83,9 @@ public class DBHelperContent extends SQLiteOpenHelper {
         );
     }
 
-
     public long insertAll(SQLiteDatabase db, ContentValues values){
         return db.insert(this.TABLE_NAME, null, values);
     }
-
 
     public Cursor selectArticleID(SQLiteDatabase db, String articleID){
         String[] projection = {

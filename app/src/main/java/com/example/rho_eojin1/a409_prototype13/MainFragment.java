@@ -34,6 +34,7 @@ public class MainFragment extends Fragment {
     public MainFragment(Context context, String sectionName) {
         this.context = context;
         this.sectionName = sectionName;
+        main_list = new ArrayList<MainListElement>();
     }
 
     @Override
@@ -41,39 +42,35 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        main_list = new ArrayList<MainListElement>();
-
         main_list_view = (ListView) rootView.findViewById(R.id.listView);
         main_list_adapter = new MainListAdapter(rootView.getContext(), R.layout.main_list_element, main_list);
-        main_list_adapter.notifyDataSetInvalidated();
         main_list_view.setAdapter(main_list_adapter);
-
-        Cursor cursor;
 
         DBHelperMain dbHelperMain = DBHelperMain.getInstance(this.context);
 
         SQLiteDatabase dbMain = dbHelperMain.getReadableDatabase();
 
+        Cursor cursor;
+
         if (sectionName.equals("홈")) {
             cursor = dbHelperMain.selectAll(dbMain);
-        }else {
+        } else {
             cursor = dbHelperMain.selectSection(dbMain, sectionName);
         }
+        cursor.moveToFirst();
 
-        if (cursor.moveToFirst()) {
-            while (cursor.isAfterLast() == false) {
+        while (!cursor.isAfterLast()) {
 
-                String article_id = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLEID));
-                String title = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLETITLE));
-                String thumbnail = cursor.getString(cursor.getColumnIndex(dbHelperMain.THUMBNAILIMAGEURL));
-                String press = cursor.getString(cursor.getColumnIndex(dbHelperMain.PRESS));
+            String article_id = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLEID));
+            String title = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLETITLE));
+            String thumbnail = cursor.getString(cursor.getColumnIndex(dbHelperMain.THUMBNAILIMAGEURL));
+            String press = cursor.getString(cursor.getColumnIndex(dbHelperMain.PRESS));
 
-                main_list.add(new MainListElement(article_id,title,thumbnail,press));
-                cursor.moveToNext();
-            }
+            main_list.add(new MainListElement(article_id,title,thumbnail,press));
+            cursor.moveToNext();
         }
-        cursor.close();
 
+        cursor.close();
 
         main_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
