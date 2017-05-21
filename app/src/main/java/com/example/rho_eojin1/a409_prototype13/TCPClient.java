@@ -67,14 +67,13 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
             catch(java.io.IOException e)
             {
             /* Do nothing */
-                Log.e("Socket", "fail");
             }
 
             /* Protocol header declaration */
             byte[] header = new byte[8];
 
-            /* Type 1 query for debugging */
-            header[0] = 1;
+            /* Type 0 query for debugging */
+            header[0] = 0;
 
             /* Set checksum value */
             header[1] = (byte)0xef;
@@ -82,7 +81,7 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
             header[3] = (byte)0xab;
 
             /* Set query length (26 for type 0 query) */
-            int length = swap_endian(5);
+            int length = swap_endian(26);
             byte[] lengthToByte = java.nio.ByteBuffer.allocate(4).putInt(length).array();
 
             /* Length has converted to the little endian */
@@ -91,28 +90,20 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
             /* Send header to the server first */
             outputStream.write(header, 0, 8);
 
-            byte[] direction = new byte[1];
-            direction[0] = (byte)0;
-
-            int index = swap_endian(0);
-            byte[] ldxToByte = java.nio.ByteBuffer.allocate(4).putInt(index).array();
-
-            /* Send a direction and index */
-            outputStream.write(direction, 0, 1);
-            outputStream.write(ldxToByte, 0, 4);
+            /* Send a file name and a directory name(date) */
+            outputStream.write("2017-05-14 18_59".getBytes(), 0, 16);
+            outputStream.write("0000202942".getBytes(), 0, 10);
 
             /* Get server response (read header first) */
             int readByte = inputStream.read(header, 0, 8);
             System.arraycopy(header,4,lengthToByte,0,4);
-            length = swap_endian(ByteBuffer.wrap(lengthToByte).getInt()) - 4;
-
-            byte new_index[] = new byte[4];
-            inputStream.read(new_index, 0, 4);
+            length = swap_endian(ByteBuffer.wrap(lengthToByte).getInt());
 
             /* Get server response (read payload) */
             byte[] json_buffer = new byte[length];
             int readOffset = 0;
 
+            Log.d("result", Integer.toString(length));
             while(readOffset < length)
             {
                 int read_amount = inputStream.read(json_buffer, readOffset, length - readOffset);
@@ -121,6 +112,7 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
             }
 
             result = new String(json_buffer);
+            Log.d("result", result);
 
         }catch(MalformedURLException | ProtocolException exception) {
             exception.printStackTrace();
@@ -132,8 +124,7 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        Log.e("TcpClient", result);
-
+        Log.e("TCPClient", result);
 
         String tmpJSONstr = String.valueOf(result);
 
@@ -175,7 +166,6 @@ public class TCPClient extends AsyncTask<Void,Void,Void>{
                         JSONArray contentsArray = oneArticle.getJSONArray(dbHelper.CONTENTS);
                         Log.e("Jsontest2",contentsArray.getJSONObject(0).getString("ArticleType"));
                         Log.e("Jsontest2",contentsArray.toString());
-
 
                         if (contentsArray != null){
                             int contents_size = contentsArray.length();

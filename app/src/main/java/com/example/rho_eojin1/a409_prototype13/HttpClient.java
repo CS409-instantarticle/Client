@@ -84,7 +84,6 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
     protected void onPostExecute(Void aVoid) {
         Log.e("HttpClient", result);
 
-
         String tmpJSONstr = String.valueOf(result);
 
         JSONArray tmpJSONArray;
@@ -103,14 +102,17 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
 
         try {
             tmpJSONArray = new JSONArray(tmpJSONstr);
+            Log.e("Json num",String.valueOf(tmpJSONArray.length()));
             Log.e("Jsontest",tmpJSONArray.getJSONObject(0).getString("ArticleTitle"));
 
             long rowID;
             if (tmpJSONArray != null) {
                 int size = tmpJSONArray.length();
                 JSONObject oneArticle;
+
                 for (int i = 0; i < size; i++) {
                     oneArticle = tmpJSONArray.getJSONObject(i);
+
                     if (oneArticle != null) {
                         ContentValues values = new ContentValues();
                         values.put(dbHelper.ARTICLEID, oneArticle.getString(dbHelper.ARTICLEID));
@@ -119,6 +121,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                         values.put(dbHelper.THUMBNAILIMAGEURL, oneArticle.getString(dbHelper.THUMBNAILIMAGEURL));
                         values.put(dbHelper.LINK, oneArticle.getString(dbHelper.LINK));
                         values.put(dbHelper.SECTIONNAME, oneArticle.getString(dbHelper.SECTIONNAME));
+
                         rowID = dbHelper.insertAll(db, values);
                         Log.e("sqlite_test", String.valueOf(rowID));
 
@@ -145,6 +148,8 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                                     }
                                     contentValues.put(dbHelperContent.ARTICLEINDEX, oneContent.getString(dbHelperContent.ARTICLEINDEX));
                                     contentValues.put(dbHelperContent.CONTENT, oneContent.getString(dbHelperContent.CONTENT));
+
+
                                     rowID= dbHelperContent.insertAll(dbContent, contentValues);
                                 }
                             }

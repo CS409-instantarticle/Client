@@ -59,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        //HttpClient newClient = new HttpClient(getApplicationContext(), "http://192.249.31.219:3000/posts");
-        TCPClient newClient = new TCPClient(getApplicationContext(), "110.76.96.53", 3124);
+        HttpClient newClient = new HttpClient(getApplicationContext(), "http://143.248.234.228:1234/ArticleList/1");
         newClient.execute();
 
         List<String> sec_names = new ArrayList<>();
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         sec_names.add("생활");
         sec_names.add("세계");
 
-        for(int i=0; i < sec_names.size(); ++i) {
+        for(int i = 0; i < sec_names.size(); ++i) {
             Log.e("Init_section", sec_names.get(i));
             MainFragment newFrag = new MainFragment(getApplicationContext(), sec_names.get(i));
             mSectionsPagerAdapter.addFragment(newFrag, sec_names.get(i));

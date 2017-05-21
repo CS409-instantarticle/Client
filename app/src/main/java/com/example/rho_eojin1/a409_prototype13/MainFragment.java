@@ -53,14 +53,14 @@ public class MainFragment extends Fragment {
         SQLiteDatabase dbMain = dbHelperMain.getReadableDatabase();
 
         if (sectionName.equals("홈")) {
-            Log.e("HomeMust","True");
-            cursor = dbHelperMain.selectSection(dbMain, "None");
+            cursor = dbHelperMain.selectAll(dbMain);
         }else {
             cursor = dbHelperMain.selectSection(dbMain, sectionName);
         }
 
         if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
+
                 String article_id = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLEID));
                 String title = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLETITLE));
                 String thumbnail = cursor.getString(cursor.getColumnIndex(dbHelperMain.THUMBNAILIMAGEURL));
@@ -72,17 +72,15 @@ public class MainFragment extends Fragment {
         }
         cursor.close();
 
+
         main_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 MainListElement clickedElement = (MainListElement) adapterView.getAdapter().getItem(position);
                 String ID = clickedElement.getArticleID();
-                Intent intent = new Intent(rootView.getContext(), ContentActivity.class);
+                Intent intent = new Intent(rootView.getContext(), ContentActivity2.class);
                 Log.e("intent_called","sd");
                 intent.putExtra("ArticleID",ID);
-
-                long tStart = System.currentTimeMillis();
-                intent.putExtra("tStart", tStart);
                 startActivity(intent);
             }
         });

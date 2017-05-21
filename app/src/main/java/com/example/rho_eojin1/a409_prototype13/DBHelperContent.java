@@ -25,6 +25,9 @@ public class DBHelperContent extends SQLiteOpenHelper {
     public static final String ARTICLETYPE = "ArticleType";
     public static final String ARTICLEINDEX = "ArticleIndex";
     public static final String CONTENT = "content";
+    public static final String LINKURL="url";
+    public static final String IMAGETAG = "tag";
+    // 추가할 변수들 : link URL, 비디오 등
 
     public static synchronized DBHelperContent getInstance(Context context) {
         if (sInstance == null) {
@@ -44,7 +47,13 @@ public class DBHelperContent extends SQLiteOpenHelper {
                 ARTICLEID + " TEXT, " +
                 ARTICLETYPE + " TEXT, " +
                 ARTICLEINDEX + " INTEGER, " +
-                CONTENT + " TEXT" + " )");
+                CONTENT + " TEXT " +
+                /*
+                 + "," +
+                LINKURL + "TEXT, " +
+                IMAGETAG + "TEXT " +
+                */
+                " )");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -74,9 +83,11 @@ public class DBHelperContent extends SQLiteOpenHelper {
         );
     }
 
+
     public long insertAll(SQLiteDatabase db, ContentValues values){
         return db.insert(this.TABLE_NAME, null, values);
     }
+
 
     public Cursor selectArticleID(SQLiteDatabase db, String articleID){
         String[] projection = {
