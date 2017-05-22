@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(i == 0)
             {
-                HttpClient newClient = new HttpClient(getApplicationContext(), "http://imgeffect.kaist.ac.kr:1234/ArticleList/0", true, newFrag);
+                HttpClient newClient = new HttpClient(getApplicationContext(), "http://imgeffect.kaist.ac.kr:1234/RecentArticleList/", true, newFrag);
                 newClient.execute();
             }
         }

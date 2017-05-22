@@ -30,29 +30,36 @@ public class MainFragment extends Fragment {
     String sectionName;
     Context context;
     int last_requested = 0;
-    int min_index = 0;
+    int local_min_index = 0;
+    static int min_index = 0;
     static int max_index = -1;
 
     public MainFragment(Context context, String sectionName) {
         this.context = context;
         this.sectionName = sectionName;
         main_list = new ArrayList<MainListElement>();
+        min_index = 0;
+        Log.e("index_2_created", String.valueOf(max_index));
     }
 
     public void UpdateList()
     {
+        if(main_list_adapter == null)
+            return;
+        Log.e("index_2_", String.valueOf(local_min_index) + "," + String.valueOf(max_index));
+
         DBHelperMain dbHelperMain = DBHelperMain.getInstance(this.context);
         SQLiteDatabase dbMain = dbHelperMain.getReadableDatabase();
         Cursor cursor;
 
         if (sectionName.equals("홈")) {
-            cursor = dbHelperMain.selectIndex(dbMain, min_index, max_index);
+            cursor = dbHelperMain.selectIndex(dbMain, min_index - 1, local_min_index);
         } else {
-            cursor = dbHelperMain.selectSectionIndex(dbMain, sectionName, min_index, max_index);
+            cursor = dbHelperMain.selectSectionIndex(dbMain, sectionName, min_index - 1, local_min_index);
         }
 
-        if(min_index < max_index)
-            min_index = max_index + 1;
+        if(min_index < local_min_index)
+            local_min_index = min_index - 1;
         else
             return;
 
@@ -69,8 +76,7 @@ public class MainFragment extends Fragment {
             cursor.moveToNext();
         }
 
-        if(main_list_adapter != null)
-            main_list_adapter.notifyDataSetChanged();
+        main_list_adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -89,7 +95,6 @@ public class MainFragment extends Fragment {
                 MainListElement clickedElement = (MainListElement) adapterView.getAdapter().getItem(position);
                 String ID = clickedElement.getArticleID();
                 Intent intent = new Intent(rootView.getContext(), ContentActivity2.class);
-                Log.e("intent_called","sd");
                 intent.putExtra("ArticleID",ID);
                 startActivity(intent);
             }
@@ -100,12 +105,22 @@ public class MainFragment extends Fragment {
             public void onScrollStateChanged(AbsListView absListView, int i) {}
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                Log.e("SKT",String.valueOf(i) + "," + String.valueOf(i1) + "," + String.valueOf(i2));
-                if(i == i2 - i1 && last_requested < i2 / 30 && i2 % 30 == 0) {
-                    HttpClient newClient = new HttpClient(context, "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf((last_requested + 1) * 30), false, MainFragment.this);
+                Log.e("NUM1",String.valueOf(i));
+                Log.e("NUM1",String.valueOf(i2));
+                Log.e("NUM1",String.valueOf(i1));
+                Log.e("NUM1",String.valueOf(last_requested));
+                Log.e("NUM1",String.valueOf(min_index));
+                if(i == i2 - i1 && last_requested != min_index && i2 != 0) {
+                    Log.e("NUM2",String.valueOf(i));
+                    Log.e("NUM2",String.valueOf(i2));
+                    Log.e("NUM2",String.valueOf(i1));
+                    Log.e("NUM2",String.valueOf(last_requested));
+                    Log.e("NUM2",String.valueOf(min_index));
+
+                    last_requested = min_index;
+                    Log.e("Requested : ", "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30));
+                    HttpClient newClient = new HttpClient(context, "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30), false, MainFragment.this);
                     newClient.execute();
-                    last_requested += 1;
-                    Log.e("AKT",String.valueOf(i) + "," + String.valueOf(i1) + "," + String.valueOf(i2) + "," + String.valueOf(max_index));
                 }
             }
         });

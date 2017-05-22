@@ -105,6 +105,8 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
         if(this.initial)
             dbHelperContent.onUpgrade(dbContent, 1, 1);
 
+        int max_index = -1;
+        int min_index = 2147483645;
         try {
             tmpJSONArray = new JSONArray(tmpJSONstr);
             Log.e("Json num",String.valueOf(tmpJSONArray.length()));
@@ -121,7 +123,11 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                     if (oneArticle != null) {
                         ContentValues values = new ContentValues();
                         values.put(dbHelper.ARTICLEID, oneArticle.getString(dbHelper.ARTICLEID));
-                        values.put(dbHelper.ARTICLE_MAIN_INDEX, Integer.parseInt(oneArticle.getString(dbHelper.ARTICLE_MAIN_INDEX)));
+                        int temp = Integer.parseInt(oneArticle.getString(dbHelper.ARTICLE_MAIN_INDEX));
+                        max_index = max_index > temp ? max_index : temp;
+                        min_index = min_index > temp ? temp : min_index;
+
+                        values.put(dbHelper.ARTICLE_MAIN_INDEX, temp);
                         values.put(dbHelper.ARTICLETITLE, oneArticle.getString(dbHelper.ARTICLETITLE));
                         values.put(dbHelper.PRESS, oneArticle.getString(dbHelper.PRESS));
                         values.put(dbHelper.THUMBNAILIMAGEURL, oneArticle.getString(dbHelper.THUMBNAILIMAGEURL));
@@ -155,7 +161,6 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                                     contentValues.put(dbHelperContent.ARTICLEINDEX, oneContent.getString(dbHelperContent.ARTICLEINDEX));
                                     contentValues.put(dbHelperContent.CONTENT, oneContent.getString(dbHelperContent.CONTENT));
 
-
                                     rowID= dbHelperContent.insertAll(dbContent, contentValues);
                                 }
                             }
@@ -164,10 +169,23 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                 }
             }
         } catch (JSONException e) {
+            Log.e("index", "added but with an error");
             e.printStackTrace();
         }
 
-        main_fragment.max_index += 30;
+        if(this.initial) {
+            main_fragment.max_index = max_index;
+            main_fragment.min_index = min_index;
+            main_fragment.local_min_index = max_index;
+        }
+        else
+        {
+            main_fragment.max_index = main_fragment.max_index > max_index ? main_fragment.max_index : max_index;
+            main_fragment.min_index = main_fragment.min_index > min_index ? min_index : main_fragment.min_index;
+        }
+
+        Log.e("index", "added, " + String.valueOf(max_index) + "," + String.valueOf(min_index));
+        //main_fragment.max_index += 30;
         main_fragment.UpdateList();
 
         super.onPostExecute(aVoid);

@@ -50,7 +50,6 @@ public class ContentActivity2 extends AppCompatActivity {
                 Log.e("Content", content);
                 //Log.e("Why_Many", String.valueOf(cursor.getPosition()));
 
-
                 if (type.equals("text")) {
                     TextView textView = new TextView(getApplicationContext());
                     linearLayout.addView(textView);
@@ -87,7 +86,6 @@ public class ContentActivity2 extends AppCompatActivity {
                     );
                     */
 
-
                     imageView.setLayoutParams(
                             new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -95,7 +93,6 @@ public class ContentActivity2 extends AppCompatActivity {
 
                     imageView.setScaleType(ImageView.ScaleType.FIT_START);
                     imageView.setAdjustViewBounds(true);
-
 
                     linearLayout.addView(imageView);
                     final String image_URL = content;
