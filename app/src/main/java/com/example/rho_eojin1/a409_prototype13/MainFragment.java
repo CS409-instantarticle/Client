@@ -33,6 +33,7 @@ public class MainFragment extends Fragment {
     int local_min_index = 0;
     static int min_index = 0;
     static int max_index = -1;
+    private boolean db_init = false;
 
     public MainFragment(Context context, String sectionName) {
         this.context = context;
@@ -40,6 +41,16 @@ public class MainFragment extends Fragment {
         main_list = new ArrayList<MainListElement>();
         min_index = 0;
         Log.e("index_2_created", String.valueOf(max_index));
+    }
+
+    public void getInitDB(){
+        if(db_init == false){
+            HttpClient newClient = new HttpClient(this.context, "http://kaist.tk:1234/ArticleSection/" + sectionName + "/99999999", true, this);
+            newClient.execute();
+            db_init = true;
+        }else {
+            return;
+        }
     }
 
     public void UpdateList()
@@ -52,11 +63,14 @@ public class MainFragment extends Fragment {
         SQLiteDatabase dbMain = dbHelperMain.getReadableDatabase();
         Cursor cursor;
 
-        if (sectionName.equals("홈")) {
+        Log.e("Why section name wrong?", sectionName);
+        cursor = dbHelperMain.selectIndex(dbMain, sectionName, min_index - 1, local_min_index);
+
+        /*if (sectionName.equals("홈")) {
             cursor = dbHelperMain.selectIndex(dbMain, min_index - 1, local_min_index);
         } else {
             cursor = dbHelperMain.selectSectionIndex(dbMain, sectionName, min_index - 1, local_min_index);
-        }
+        }*/
 
         if(min_index < local_min_index)
             local_min_index = min_index - 1;
@@ -72,6 +86,7 @@ public class MainFragment extends Fragment {
             String thumbnail = cursor.getString(cursor.getColumnIndex(dbHelperMain.THUMBNAILIMAGEURL));
             String press = cursor.getString(cursor.getColumnIndex(dbHelperMain.PRESS));
 
+            //Log.e("SectionArticleTitle", title);
             main_list.add(new MainListElement(article_id,title,thumbnail,press));
             cursor.moveToNext();
         }
@@ -96,6 +111,9 @@ public class MainFragment extends Fragment {
                 String ID = clickedElement.getArticleID();
                 Intent intent = new Intent(rootView.getContext(), ContentActivity2.class);
                 intent.putExtra("ArticleID",ID);
+                intent.putExtra("SectionName",sectionName);
+                Log.e("Why not catch", ID);
+                Log.e("Why not catch", sectionName);
                 startActivity(intent);
             }
         });
@@ -105,22 +123,22 @@ public class MainFragment extends Fragment {
             public void onScrollStateChanged(AbsListView absListView, int i) {}
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                Log.e("NUM1",String.valueOf(i));
-                Log.e("NUM1",String.valueOf(i2));
-                Log.e("NUM1",String.valueOf(i1));
-                Log.e("NUM1",String.valueOf(last_requested));
-                Log.e("NUM1",String.valueOf(min_index));
+                //Log.e("NUM1",String.valueOf(i));
+                //Log.e("NUM1",String.valueOf(i2));
+                //Log.e("NUM1",String.valueOf(i1));
+                //Log.e("NUM1",String.valueOf(last_requested));
+                //Log.e("NUM1",String.valueOf(min_index));
                 if(i == i2 - i1 && last_requested != min_index && i2 != 0) {
-                    Log.e("NUM2",String.valueOf(i));
-                    Log.e("NUM2",String.valueOf(i2));
-                    Log.e("NUM2",String.valueOf(i1));
-                    Log.e("NUM2",String.valueOf(last_requested));
-                    Log.e("NUM2",String.valueOf(min_index));
+                    //Log.e("NUM2",String.valueOf(i));
+                    //Log.e("NUM2",String.valueOf(i2));
+                    //Log.e("NUM2",String.valueOf(i1));
+                    //Log.e("NUM2",String.valueOf(last_requested));
+                    //Log.e("NUM2",String.valueOf(min_index));
 
                     last_requested = min_index;
-                    Log.e("Requested : ", "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30));
-                    HttpClient newClient = new HttpClient(context, "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30), false, MainFragment.this);
-                    newClient.execute();
+                    //Log.e("Requested : ", "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30));
+                    //HttpClient newClient = new HttpClient(context, "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30), false, MainFragment.this);
+                    //newClient.execute();
                 }
             }
         });

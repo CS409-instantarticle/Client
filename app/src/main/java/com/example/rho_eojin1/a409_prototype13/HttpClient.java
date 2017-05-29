@@ -85,7 +85,8 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        Log.e("HttpClient", result);
+        //Log.e("HttpClient", result);
+        Log.e("HttpClient", main_fragment.sectionName);
 
         String tmpJSONstr = String.valueOf(result);
 
@@ -95,22 +96,22 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        if(this.initial)
-            dbHelper.onUpgrade(db, 1, 1);
+        //if(this.initial)
+            //dbHelper.onUpgrade(db, 1, 1);
 
         DBHelperContent dbHelperContent = DBHelperContent.getInstance(context);
 
         SQLiteDatabase dbContent = dbHelperContent.getWritableDatabase();
 
-        if(this.initial)
-            dbHelperContent.onUpgrade(dbContent, 1, 1);
+        //if(this.initial)
+        //    dbHelperContent.onUpgrade(dbContent, 1, 1);
 
         int max_index = -1;
         int min_index = 2147483645;
         try {
             tmpJSONArray = new JSONArray(tmpJSONstr);
-            Log.e("Json num",String.valueOf(tmpJSONArray.length()));
-            Log.e("Jsontest",tmpJSONArray.getJSONObject(0).getString("ArticleTitle"));
+            //Log.e("Json num",String.valueOf(tmpJSONArray.length()));
+            //Log.e("Jsontest",tmpJSONArray.getJSONObject(0).getString("ArticleTitle"));
 
             long rowID;
             if (tmpJSONArray != null) {
@@ -134,12 +135,12 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                         values.put(dbHelper.LINK, oneArticle.getString(dbHelper.LINK));
                         values.put(dbHelper.SECTIONNAME, oneArticle.getString(dbHelper.SECTIONNAME));
 
-                        rowID = dbHelper.insertAll(db, values);
-                        Log.e("sqlite_test", String.valueOf(rowID));
+                        rowID = dbHelper.insertAll(db, main_fragment.sectionName, values);
+                        //Log.e("sqlite_test", String.valueOf(rowID));
 
                         JSONArray contentsArray = oneArticle.getJSONArray(dbHelper.CONTENTS);
-                        Log.e("Jsontest2",contentsArray.getJSONObject(0).getString("ArticleType"));
-                        Log.e("Jsontest2",contentsArray.toString());
+                        //Log.e("Jsontest2",contentsArray.getJSONObject(0).getString("ArticleType"));
+                        //Log.e("Jsontest2",contentsArray.toString());
 
 
                         if (contentsArray != null){
@@ -147,7 +148,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                             JSONObject oneContent;
                             for (int j = 0; j < contents_size; j++) {
                                 oneContent = contentsArray.getJSONObject(j);
-                                Log.e("sqlite_test2", oneContent.toString());
+                                //Log.e("sqlite_test2", oneContent.toString());
 
                                 if (oneContent != null) {
                                     ContentValues contentValues = new ContentValues();
@@ -161,7 +162,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                                     contentValues.put(dbHelperContent.ARTICLEINDEX, oneContent.getString(dbHelperContent.ARTICLEINDEX));
                                     contentValues.put(dbHelperContent.CONTENT, oneContent.getString(dbHelperContent.CONTENT));
 
-                                    rowID= dbHelperContent.insertAll(dbContent, contentValues);
+                                    rowID= dbHelperContent.insertAll(dbContent, main_fragment.sectionName, contentValues);
                                 }
                             }
                         }
@@ -184,7 +185,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
             main_fragment.min_index = main_fragment.min_index > min_index ? min_index : main_fragment.min_index;
         }
 
-        Log.e("index", "added, " + String.valueOf(max_index) + "," + String.valueOf(min_index));
+        //Log.e("index", "added, " + String.valueOf(max_index) + "," + String.valueOf(min_index));
         //main_fragment.max_index += 30;
         main_fragment.UpdateList();
 

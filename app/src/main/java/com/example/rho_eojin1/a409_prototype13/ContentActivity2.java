@@ -20,8 +20,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class ContentActivity2 extends AppCompatActivity {
-    ArrayList<ContentListElement> content_list;
-    ListView content_list_view;
+    String articleID;
+    String sectionName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +29,18 @@ public class ContentActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_content2);
 
         Intent intent = getIntent();
-        String articleID = intent.getExtras().getString("ArticleID");
-        Log.e("GetExtras", articleID);
+        articleID = intent.getExtras().getString("ArticleID");
 
+        sectionName = intent.getExtras().getString("SectionName");
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
         DBHelperContent dbHelperContent = DBHelperContent.getInstance(getApplicationContext());
         SQLiteDatabase dbContent = dbHelperContent.getReadableDatabase();
-        Cursor cursor = dbHelperContent.selectArticleID(dbContent, articleID);
+
+
+        //Log.e("ContentPage", articleID);
+        //Log.e("ContentPage", sectionName);
+        Cursor cursor = dbHelperContent.selectArticleID(dbContent, sectionName, articleID);
 
         if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
@@ -45,9 +49,9 @@ public class ContentActivity2 extends AppCompatActivity {
                 String type = cursor.getString(cursor.getColumnIndex(dbHelperContent.ARTICLETYPE));
                 String content = cursor.getString(cursor.getColumnIndex(dbHelperContent.CONTENT));
 
-                Log.e("Index", String.valueOf(index));
-                Log.e("Type", type);
-                Log.e("Content", content);
+                //Log.e("Index", String.valueOf(index));
+                //Log.e("Type", type);
+                //Log.e("ContentPageContent", content);
                 //Log.e("Why_Many", String.valueOf(cursor.getPosition()));
 
                 if (type.equals("text")) {
@@ -74,17 +78,6 @@ public class ContentActivity2 extends AppCompatActivity {
 
                 else if (type.equals("image")) {
                     ImageView imageView = new ImageView(getApplicationContext());
-                    int height= imageView.getHeight();
-                    int width = imageView.getWidth();
-
-                    //Log.e("layout Width", String.valueOf(viewWidth));
-                    /*
-                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                            viewWidth,
-                            (int) (height * (double) viewWidth / width))
-                    );
-                    */
 
                     imageView.setLayoutParams(
                             new LinearLayout.LayoutParams(
