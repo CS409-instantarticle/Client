@@ -40,8 +40,10 @@ public class CacheMediaTask extends AsyncTask<String, Void, Void> {
             URL url = new URL(image_URL);
 
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
             urlConnection.setRequestMethod("GET");
             urlConnection.setDoOutput(true);
+
             urlConnection.connect();
 
             String fileName = Uri.parse(image_URL).getLastPathSegment();
@@ -49,18 +51,23 @@ public class CacheMediaTask extends AsyncTask<String, Void, Void> {
                 return null;
             }
 
-
             File file = new File(this.context.getCacheDir(), fileName);
-            //Log.e("fileName", file.getAbsolutePath());
+            Log.e("fileName", file.getAbsolutePath());
+
+            //File file = new File(getApplicationContext().getFilesDir(), fileName);
+
             FileOutputStream fileOutput = new FileOutputStream(file);
 
             //read data from connection
             InputStream inputStream = urlConnection.getInputStream();
+
             int totalSize = urlConnection.getContentLength();
+            //in bytes
             int downloadedSize = 0;
 
             byte[] buffer = new byte[1024];
             int bufferLength = 0;
+
 
             while ((bufferLength = inputStream.read(buffer)) > 0) {
                 fileOutput.write(buffer, 0, bufferLength);
@@ -68,7 +75,7 @@ public class CacheMediaTask extends AsyncTask<String, Void, Void> {
             }
             fileOutput.close();
 
-            //Log.e("complete", "done");
+            Log.e("complete", "done");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -2,10 +2,8 @@ package com.example.rho_eojin1.a409_prototype13;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -15,62 +13,106 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.Socket;
+import java.nio.ByteBuffer;
 
 /**
- * Created by Rho-Eojin1 on 2017. 5. 8..
+ * Created by root on 2017-05-15.
  */
 
-public class HttpClient extends AsyncTask<Void,Void,Void>{
-    //ArrayList<MainListElement> main_list;
+public class TCPClient extends AsyncTask<Void,Void,Void>{
+
+    public int swap_endian (int value)
+    {
+        int b1 = (value >>  0) & 0xff;
+        int b2 = (value >>  8) & 0xff;
+        int b3 = (value >> 16) & 0xff;
+        int b4 = (value >> 24) & 0xff;
+
+        return b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0;
+    }
+
     Context context;
-    String strUrl;
+    String Host;
+    int port;
     String result;
 
-    HttpClient(Context context, String strUrl) {
-        this.context = context;
-        this.strUrl = strUrl; //탐색하고 싶은 URL이다.
-        Log.e("called","Now");
-        //this.main_list = main_list;
-    }
+    Socket socket = null;
+    InputStream inputStream = null;
+    OutputStream outputStream = null;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+    }
 
+    TCPClient(Context context, String Host, int port) {
+        this.context = context;
+        this.Host = Host;
+        this.port = port;
     }
 
     protected Void doInBackground(Void... voids) {
         try{
-            URL Url = new URL(strUrl); // URL화 한다.
-            HttpURLConnection conn = (HttpURLConnection) Url.openConnection(); // URL을 연결한 객체 생성.
-            conn.setRequestMethod("GET"); // get방식 통신
-            conn.setDoOutput(false); // 쓰기모드 지정
-            conn.setDoInput(true); // 읽기모드 지정
-            conn.setUseCaches(false); // 캐싱데이터를 받을지 안받을지
-            conn.setDefaultUseCaches(false); // 캐싱데이터 디폴트 값 설정
-
-            //strCookie = conn.getHeaderField("Set-Cookie"); //쿠키데이터 보관
-
-            InputStream is = conn.getInputStream(); //input스트림 개방
-
-            StringBuilder builder = new StringBuilder(); //문자열을 담기 위한 객체
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is,"UTF-8")); //문자열 셋 세팅
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                builder.append(line+ "\n");
+            /* Create new socket */
+            try {
+                this.socket = new Socket(this.Host, this.port);
+                this.inputStream = socket.getInputStream();
+                this.outputStream = socket.getOutputStream();
+            }
+            catch(java.io.IOException e)
+            {
+            /* Do nothing */
             }
 
-            result = builder.toString();
-            //Log.e("Builder", builder.toString());
+            /* Protocol header declaration */
+            byte[] header = new byte[8];
 
+            /* Type 0 query for debugging */
+            header[0] = 0;
+
+            /* Set checksum value */
+            header[1] = (byte)0xef;
+            header[2] = (byte)0xcd;
+            header[3] = (byte)0xab;
+
+            /* Set query length (26 for type 0 query) */
+            int length = swap_endian(26);
+            byte[] lengthToByte = java.nio.ByteBuffer.allocate(4).putInt(length).array();
+
+            /* Length has converted to the little endian */
+            System.arraycopy(lengthToByte, 0, header, 4, 4);
+
+            /* Send header to the server first */
+            outputStream.write(header, 0, 8);
+
+            /* Send a file name and a directory name(date) */
+            outputStream.write("2017-05-14 18_59".getBytes(), 0, 16);
+            outputStream.write("0000202942".getBytes(), 0, 10);
+
+            /* Get server response (read header first) */
+            int readByte = inputStream.read(header, 0, 8);
+            System.arraycopy(header,4,lengthToByte,0,4);
+            length = swap_endian(ByteBuffer.wrap(lengthToByte).getInt());
+
+            /* Get server response (read payload) */
+            byte[] json_buffer = new byte[length];
+            int readOffset = 0;
+
+            Log.d("result", Integer.toString(length));
+            while(readOffset < length)
+            {
+                int read_amount = inputStream.read(json_buffer, readOffset, length - readOffset);
+                /* Break if read amount <= -1, but not yet implemented */
+                readOffset += read_amount;
+            }
+
+            result = new String(json_buffer);
+            Log.d("result", result);
 
         }catch(MalformedURLException | ProtocolException exception) {
             exception.printStackTrace();
@@ -82,7 +124,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        Log.e("HttpClient", result);
+        Log.e("TCPClient", result);
 
         String tmpJSONstr = String.valueOf(result);
 
@@ -101,8 +143,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
         dbHelperContent.onUpgrade(dbContent, 1, 1);
 
         try {
-            tmpJSONArray = new JSONArray(tmpJSONstr);
-            Log.e("Json num",String.valueOf(tmpJSONArray.length()));
+            tmpJSONArray = new JSONArray("[" + tmpJSONstr + "]");
             Log.e("Jsontest",tmpJSONArray.getJSONObject(0).getString("ArticleTitle"));
 
             long rowID;
@@ -125,7 +166,6 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                         JSONArray contentsArray = oneArticle.getJSONArray(dbHelper.CONTENTS);
                         Log.e("Jsontest2",contentsArray.getJSONObject(0).getString("ArticleType"));
                         Log.e("Jsontest2",contentsArray.toString());
-
 
                         if (contentsArray != null){
                             int contents_size = contentsArray.length();

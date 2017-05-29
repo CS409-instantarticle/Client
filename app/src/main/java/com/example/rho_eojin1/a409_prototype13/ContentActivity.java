@@ -3,8 +3,6 @@ package com.example.rho_eojin1.a409_prototype13;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,17 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-public class MainActivity extends AppCompatActivity {
+public class ContentActivity extends AppCompatActivity {
+    String articleID;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -51,53 +47,45 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_content);
+
+        Intent intent = getIntent();
+        articleID = intent.getExtras().getString("ArticleID");
+        Log.e("GetExtras", articleID);
+        long tStart = intent.getExtras().getLong("tStart");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        ContentFragment contentFragment = new ContentFragment(getApplicationContext(), articleID);
 
-        HttpClient newClient = new HttpClient(getApplicationContext(), "http://143.248.234.228:1234/ArticleList/1");
-        //TCPClient newClient = new TCPClient(getApplicationContext(), "110.76.96.53", 3124);
-        newClient.execute();
+        mSectionsPagerAdapter.addFragment(contentFragment, articleID);
 
-        List<String> sec_names = new ArrayList<>();
-        sec_names.add("홈");
-        sec_names.add("정치");
-        sec_names.add("경제");
-        sec_names.add("사회");
-        sec_names.add("IT");
-        sec_names.add("생활");
-        sec_names.add("세계");
-
-        for(int i=0; i < sec_names.size(); ++i) {
-            Log.e("Init_section", sec_names.get(i));
-            MainFragment newFrag = new MainFragment(getApplicationContext(), sec_names.get(i));
-            mSectionsPagerAdapter.addFragment(newFrag, sec_names.get(i));
-        }
-
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        long tEnd = System.currentTimeMillis();
+        Log.e("tEnd", String.valueOf(tEnd));
+        long tDelta = tEnd - tStart;
+        Log.e("elapsedtime", String.valueOf(tDelta) + "msec");
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_content, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -111,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         final List<Fragment> mFragmentList = new ArrayList<>();
-        final List<String> mFragmentTitleList = new ArrayList<>();
+        final List<String> mFragmentIDList = new ArrayList<>();
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -122,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
             return mFragmentList.get(position);
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        public void addFragment(Fragment fragment, String ArticleID) {
             mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
+            mFragmentIDList.add(ArticleID);
         }
 
         @Override
@@ -134,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
+            return mFragmentIDList.get(position);
         }
     }
 }
