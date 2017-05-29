@@ -16,10 +16,15 @@ import java.util.ArrayList;
  */
 
 public class MainListAdapter extends ArrayAdapter<MainListElement> {
+
+
     ArrayList<MainListElement> items;
+
     ImageView imageView;
     TextView textView1;
     TextView textView2;
+
+
     public MainListAdapter(Context context, int textViewResourceId, ArrayList<MainListElement> items){
         super(context, textViewResourceId, items);
         this.items = items;
@@ -38,14 +43,20 @@ public class MainListAdapter extends ArrayAdapter<MainListElement> {
             imageView = (ImageView) v.findViewById(R.id.imageView1);
             textView1 = (TextView) v.findViewById(R.id.textView1);
             textView2 = (TextView) v.findViewById(R.id.textView2);
+
+
             if (imageView != null){
+                imageView.setVisibility(View.VISIBLE);
                 imageView.setImageResource(R.drawable.ic_launcher);
                 //Log.e("ImageTitle",p.getTitle());
                 //Log.e("ImageThumbnail",p.getThumbnail());
                 final String image_URL = p.getThumbnail();
                 ThumbnailTask thumbnailTask = new ThumbnailTask(context, imageView);
                 thumbnailTask.execute(image_URL);
+            } else {
+                imageView.setVisibility(View.GONE);
             }
+
             if (textView1 != null){
                 textView1.setText(p.getTitle());
             }
@@ -53,14 +64,6 @@ public class MainListAdapter extends ArrayAdapter<MainListElement> {
                 textView2.setText(p.getPress());
             }
         }
-
-        /*
-        if(position%2 == 0){
-            v.setBackgroundColor(0x00FFFFFF);
-        }
-        else{
-            v.setBackgroundColor(0x00FFFFFF);
-        }*/
 
         return v;
     }

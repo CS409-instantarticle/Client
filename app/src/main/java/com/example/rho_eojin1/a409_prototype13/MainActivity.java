@@ -53,15 +53,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        DBHelperMain dbHelper = DBHelperMain.getInstance(getApplication());
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        dbHelper.onUpgrade(db, 1, 1);
+        //db.close();
+
+        DBHelperContent dbHelperContent = DBHelperContent.getInstance(getApplicationContext());
+        SQLiteDatabase dbContent = dbHelperContent.getWritableDatabase();
+        dbHelperContent.onUpgrade(dbContent, 1, 1);
+        //dbContent.close();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        HttpClient newClient = new HttpClient(getApplicationContext(), "http://143.248.234.228:1234/ArticleList/1");
-        //TCPClient newClient = new TCPClient(getApplicationContext(), "110.76.96.53", 3124);
-        newClient.execute();
 
         List<String> sec_names = new ArrayList<>();
         sec_names.add("홈");
@@ -72,18 +80,40 @@ public class MainActivity extends AppCompatActivity {
         sec_names.add("생활");
         sec_names.add("세계");
 
-        for(int i=0; i < sec_names.size(); ++i) {
+        for(int i = 0; i < sec_names.size(); ++i) {
             Log.e("Init_section", sec_names.get(i));
             MainFragment newFrag = new MainFragment(getApplicationContext(), sec_names.get(i));
+            if(i == 0){
+                newFrag.getInitDB();
+            }
             mSectionsPagerAdapter.addFragment(newFrag, sec_names.get(i));
         }
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                //Log.d(getClass().getName(),"onPageScrolled : "+position);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                //Log.d(getClass().getName(),"onPageSelected : "+position);
+                mSectionsPagerAdapter.getItem(position).getInitDB();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                //Log.d(getClass().getName(),"onPageStateChanged : "+state);
+            }
+        });
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        TabLayout.Tab tab = tabLayout.getTabAt(0);
+        tab.select();
     }
 
 
@@ -94,9 +124,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Log.e("Section selected",String.valueOf(id));
 
         if (id == R.id.action_settings) {
             return true;
@@ -110,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        final List<Fragment> mFragmentList = new ArrayList<>();
+        final List<MainFragment> mFragmentList = new ArrayList<>();
         final List<String> mFragmentTitleList = new ArrayList<>();
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -118,11 +150,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public MainFragment getItem(int position) {
             return mFragmentList.get(position);
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        public void addFragment(MainFragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
