@@ -10,6 +10,7 @@ public class MainListElement {
     private String thumbnail;
     private String press;
 
+
     public MainListElement(String article_id, String title, String thumbnail, String press){
         this.article_id = article_id;
         this.title = title;

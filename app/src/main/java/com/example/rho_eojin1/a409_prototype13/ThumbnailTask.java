@@ -31,7 +31,7 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
-        Log.e("Thread_Often","True");
+        //Log.e("Thread_Often","True");
         if (file != null) {
             imageView.setImageURI(Uri.fromFile(file));
         }else {
@@ -52,7 +52,7 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
         }
 
         file = new File(this.context.getCacheDir(), fileName);
-        Log.e("fileName", file.getAbsolutePath());
+        //Log.e("fileName", file.getAbsolutePath());
         if (file.exists()){
             Log.e("File_Exists","True");
             return null;
@@ -87,7 +87,7 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
                 }
                 fileOutput.close();
 
-                Log.e("complete", "done");
+                //Log.e("complete", "done");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
