@@ -124,7 +124,7 @@ public class ContentActivity2 extends AppCompatActivity {
                     long tEnd = System.currentTimeMillis();
                     Log.e("Elapsed Time", String.valueOf(tEnd - tStart) + " ms");
 
-                    String path = "http://naver-mbc-h.smartmediarep.com/smc/naver/multi/eng/M12_T9201705300024/2f6d62632f6d6263706c75732f617263686976652f73706f7274732f323031372f30352f33302f47413230313730353330303030352f43413230313730353330303032332f43413230313730353330303032335f7433332e6d7034/0-0-0/content.mp4?solexpire=1496160923&soltoken=f52a9f575360730e1fcd36905e4f5cf4&soltokenrule=c29sZXhwaXJlfHNvbHBhdGhsZW58c29sdXVpZA==&soluriver=2&soluuid=a5aafafb-47b7-4a78-8ba9-62d2f605e55a&itemtypeid=33&tid=rmcPlayer_14961177368823009";
+                    String path = "http://html5demos.com/assets/dizzy.mp4";
                     Uri uri = Uri.parse(path);
                     VideoView videoView = new VideoView(getApplicationContext());
                     videoView.setLayoutParams(new LinearLayout.LayoutParams(width,height));

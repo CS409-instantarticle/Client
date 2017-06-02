@@ -138,7 +138,7 @@ public class MainFragment extends Fragment {
 
                     last_requested = min_index;
                     //Log.e("Requested : ", "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30));
-                    HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + sectionName + "/" + String.valueOf(min_index - 30), false, MainFragment.this);
+                    HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + sectionName + "/" + String.valueOf(min_index - 1), false, MainFragment.this);
                     newClient.execute();
                 }
             }
