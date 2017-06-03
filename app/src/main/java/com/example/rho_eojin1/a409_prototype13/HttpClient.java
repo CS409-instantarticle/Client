@@ -34,6 +34,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
     String result;
     boolean initial;
     MainFragment main_fragment;
+    //private boolean flag = false;
 
     HttpClient(Context context, String strUrl, boolean initial, MainFragment main_fragment) {
         this.context = context;
@@ -49,8 +50,16 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
         super.onPreExecute();
     }
 
+    /*protected void stop() {
+        flag = true;
+    }*/
+
     protected Void doInBackground(Void... voids) {
         try{
+            if (isCancelled()) {
+                Log.e("cancel","doinbackground stoped");
+                return null;
+            }
             URL Url = new URL(strUrl); // URL화 한다.
             HttpURLConnection conn = (HttpURLConnection) Url.openConnection(); // URL을 연결한 객체 생성.
             conn.setRequestMethod("GET"); // get방식 통신
@@ -62,6 +71,10 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
             //strCookie = conn.getHeaderField("Set-Cookie"); //쿠키데이터 보관
 
             InputStream is = conn.getInputStream(); //input스트림 개방
+            if (isCancelled()) {
+                Log.e("cancel","doinbackground stoped");
+                return null;
+            }
 
             StringBuilder builder = new StringBuilder(); //문자열을 담기 위한 객체
             BufferedReader reader = new BufferedReader(new InputStreamReader(is,"UTF-8")); //문자열 셋 세팅
@@ -69,6 +82,10 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
 
             while ((line = reader.readLine()) != null) {
                 builder.append(line+ "\n");
+                if (isCancelled()) {
+                    Log.e("cancel","doinbackground stoped");
+                    break;
+                }
             }
 
             result = builder.toString();
@@ -86,110 +103,112 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
     @Override
     protected void onPostExecute(Void aVoid) {
         //Log.e("HttpClient", result);
-        Log.e("HttpClient", main_fragment.sectionName);
+        if (isCancelled() == false) {
+            Log.e("cancel", "is post execute called?");
+            Log.e("HttpClient", main_fragment.sectionName);
 
-        String tmpJSONstr = String.valueOf(result);
+            String tmpJSONstr = String.valueOf(result);
 
-        JSONArray tmpJSONArray;
+            JSONArray tmpJSONArray;
 
-        DBHelperMain dbHelper = DBHelperMain.getInstance(context);
+            DBHelperMain dbHelper = DBHelperMain.getInstance(context);
 
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        //if(this.initial)
+            //if(this.initial)
             //dbHelper.onUpgrade(db, 1, 1);
 
-        DBHelperContent dbHelperContent = DBHelperContent.getInstance(context);
+            DBHelperContent dbHelperContent = DBHelperContent.getInstance(context);
 
-        SQLiteDatabase dbContent = dbHelperContent.getWritableDatabase();
+            SQLiteDatabase dbContent = dbHelperContent.getWritableDatabase();
 
-        //if(this.initial)
-        //    dbHelperContent.onUpgrade(dbContent, 1, 1);
+            //if(this.initial)
+            //    dbHelperContent.onUpgrade(dbContent, 1, 1);
 
-        int max_index = -1;
-        int min_index = 2147483645;
-        try {
-            tmpJSONArray = new JSONArray(tmpJSONstr);
-            //Log.e("Json num",String.valueOf(tmpJSONArray.length()));
-            //Log.e("Jsontest",tmpJSONArray.getJSONObject(0).getString("ArticleTitle"));
+            int max_index = -1;
+            int min_index = 2147483645;
+            try {
+                tmpJSONArray = new JSONArray(tmpJSONstr);
+                //Log.e("Json num",String.valueOf(tmpJSONArray.length()));
+                //Log.e("Jsontest",tmpJSONArray.getJSONObject(0).getString("ArticleTitle"));
 
-            long rowID;
-            if (tmpJSONArray != null) {
-                int size = tmpJSONArray.length();
-                JSONObject oneArticle;
+                long rowID;
+                if (tmpJSONArray != null) {
+                    int size = tmpJSONArray.length();
+                    JSONObject oneArticle;
 
-                for (int i = 0; i < size; i++) {
-                    oneArticle = tmpJSONArray.getJSONObject(i);
+                    for (int i = 0; i < size; i++) {
+                        oneArticle = tmpJSONArray.getJSONObject(i);
 
-                    if (oneArticle != null) {
-                        ContentValues values = new ContentValues();
-                        values.put(dbHelper.ARTICLEID, oneArticle.getString(dbHelper.ARTICLEID));
-                        int temp = Integer.parseInt(oneArticle.getString(dbHelper.ARTICLE_MAIN_INDEX));
-                        max_index = max_index > temp ? max_index : temp;
-                        min_index = min_index > temp ? temp : min_index;
+                        if (oneArticle != null) {
+                            ContentValues values = new ContentValues();
+                            values.put(dbHelper.ARTICLEID, oneArticle.getString(dbHelper.ARTICLEID));
+                            int temp = Integer.parseInt(oneArticle.getString(dbHelper.ARTICLE_MAIN_INDEX));
+                            max_index = max_index > temp ? max_index : temp;
+                            min_index = min_index > temp ? temp : min_index;
 
-                        values.put(dbHelper.ARTICLE_MAIN_INDEX, temp);
-                        values.put(dbHelper.ARTICLETITLE, oneArticle.getString(dbHelper.ARTICLETITLE));
-                        values.put(dbHelper.PRESS, oneArticle.getString(dbHelper.PRESS));
-                        values.put(dbHelper.THUMBNAILIMAGEURL, oneArticle.getString(dbHelper.THUMBNAILIMAGEURL));
-                        values.put(dbHelper.LINK, oneArticle.getString(dbHelper.LINK));
-                        values.put(dbHelper.SECTIONNAME, oneArticle.getString(dbHelper.SECTIONNAME));
+                            values.put(dbHelper.ARTICLE_MAIN_INDEX, temp);
+                            values.put(dbHelper.ARTICLETITLE, oneArticle.getString(dbHelper.ARTICLETITLE));
+                            values.put(dbHelper.PRESS, oneArticle.getString(dbHelper.PRESS));
+                            values.put(dbHelper.THUMBNAILIMAGEURL, oneArticle.getString(dbHelper.THUMBNAILIMAGEURL));
+                            values.put(dbHelper.LINK, oneArticle.getString(dbHelper.LINK));
+                            values.put(dbHelper.SECTIONNAME, oneArticle.getString(dbHelper.SECTIONNAME));
 
-                        rowID = dbHelper.insertAll(db, main_fragment.sectionName, values);
-                        //Log.e("sqlite_test", String.valueOf(rowID));
+                            rowID = dbHelper.insertAll(db, main_fragment.sectionName, values);
+                            //Log.e("sqlite_test", String.valueOf(rowID));
 
-                        JSONArray contentsArray = oneArticle.getJSONArray(dbHelper.CONTENTS);
-                        //Log.e("Jsontest2",contentsArray.getJSONObject(0).getString("ArticleType"));
-                        //Log.e("Jsontest2",contentsArray.toString());
+                            JSONArray contentsArray = oneArticle.getJSONArray(dbHelper.CONTENTS);
+                            //Log.e("Jsontest2",contentsArray.getJSONObject(0).getString("ArticleType"));
+                            //Log.e("Jsontest2",contentsArray.toString());
 
 
-                        if (contentsArray != null){
-                            int contents_size = contentsArray.length();
-                            JSONObject oneContent;
-                            for (int j = 0; j < contents_size; j++) {
-                                oneContent = contentsArray.getJSONObject(j);
-                                //Log.e("sqlite_test2", oneContent.toString());
+                            if (contentsArray != null) {
+                                int contents_size = contentsArray.length();
+                                JSONObject oneContent;
+                                for (int j = 0; j < contents_size; j++) {
+                                    oneContent = contentsArray.getJSONObject(j);
+                                    //Log.e("sqlite_test2", oneContent.toString());
 
-                                if (oneContent != null) {
-                                    ContentValues contentValues = new ContentValues();
+                                    if (oneContent != null) {
+                                        ContentValues contentValues = new ContentValues();
 
-                                    contentValues.put(dbHelperContent.ARTICLEID, oneArticle.getString(dbHelperContent.ARTICLEID));
-                                    contentValues.put(dbHelperContent.ARTICLETYPE, oneContent.getString(dbHelperContent.ARTICLETYPE));
-                                    if (oneContent.getString(dbHelperContent.ARTICLETYPE).equals("image")){
-                                        CacheMediaTask cacheTask = new CacheMediaTask(context);
-                                        cacheTask.execute(oneContent.getString(dbHelperContent.CONTENT));
+                                        contentValues.put(dbHelperContent.ARTICLEID, oneArticle.getString(dbHelperContent.ARTICLEID));
+                                        contentValues.put(dbHelperContent.ARTICLETYPE, oneContent.getString(dbHelperContent.ARTICLETYPE));
+                                        if (oneContent.getString(dbHelperContent.ARTICLETYPE).equals("image")) {
+                                            CacheMediaTask cacheTask = new CacheMediaTask(context);
+                                            cacheTask.execute(oneContent.getString(dbHelperContent.CONTENT));
+                                        }
+                                        contentValues.put(dbHelperContent.ARTICLEINDEX, oneContent.getString(dbHelperContent.ARTICLEINDEX));
+                                        contentValues.put(dbHelperContent.CONTENT, oneContent.getString(dbHelperContent.CONTENT));
+
+                                        rowID = dbHelperContent.insertAll(dbContent, main_fragment.sectionName, contentValues);
                                     }
-                                    contentValues.put(dbHelperContent.ARTICLEINDEX, oneContent.getString(dbHelperContent.ARTICLEINDEX));
-                                    contentValues.put(dbHelperContent.CONTENT, oneContent.getString(dbHelperContent.CONTENT));
-
-                                    rowID= dbHelperContent.insertAll(dbContent, main_fragment.sectionName, contentValues);
                                 }
                             }
                         }
                     }
                 }
+            } catch (JSONException e) {
+                Log.e("index", "added but with an error");
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            Log.e("index", "added but with an error");
-            e.printStackTrace();
-        }
 
-        if(this.initial) {
-            main_fragment.max_index = max_index;
-            main_fragment.min_index = min_index;
-            main_fragment.local_min_index = max_index;
-            main_fragment.local_max_index = max_index;
-        }
-        else
-        {
-            main_fragment.max_index = main_fragment.max_index > max_index ? main_fragment.max_index : max_index;
-            main_fragment.min_index = main_fragment.min_index > min_index ? min_index : main_fragment.min_index;
-        }
+            if (this.initial) {
+                main_fragment.max_index = max_index;
+                main_fragment.min_index = min_index;
+                main_fragment.local_min_index = max_index;
+                main_fragment.local_max_index = max_index;
+                this.main_fragment.db_init = true;
+            } else {
+                main_fragment.max_index = main_fragment.max_index > max_index ? main_fragment.max_index : max_index;
+                main_fragment.min_index = main_fragment.min_index > min_index ? min_index : main_fragment.min_index;
+            }
 
-        //Log.e("index", "added, " + String.valueOf(max_index) + "," + String.valueOf(min_index));
-        //main_fragment.max_index += 30;
-        main_fragment.UpdateList();
-        main_fragment.last_max_requested = 0;
-        super.onPostExecute(aVoid);
+            //Log.e("index", "added, " + String.valueOf(max_index) + "," + String.valueOf(min_index));
+            //main_fragment.max_index += 30;
+            main_fragment.UpdateList();
+            main_fragment.last_max_requested = 0;
+            super.onPostExecute(aVoid);
+        }
     }
 }

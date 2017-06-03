@@ -36,7 +36,7 @@ public class MainFragment extends Fragment {
     int local_max_index = 0;
     int min_index = 0;
     int max_index = -1;
-    private boolean db_init = false;
+    boolean db_init = false;
 
     private String ToEng()
     {
@@ -69,8 +69,10 @@ public class MainFragment extends Fragment {
     public void getInitDB(){
         if(db_init == false){
             HttpClient newClient = new HttpClient(this.context, "http://kaist.tk:1234/ArticleSection/" + ToEng() + "/99999999", true, this);
-            newClient.execute();
-            db_init = true;
+            //newClient.execute();
+            LimitHTTP.getInstance().addHttp(newClient);
+            Log.e("cancel","Limit http called");
+            //db_init = true;
         }else {
             return;
         }
@@ -144,7 +146,6 @@ public class MainFragment extends Fragment {
 
                 Intent intent = new Intent(rootView.getContext(), ContentActivity2.class);
                 intent.putExtra("ArticleID",ID);
-                intent.putExtra("ArticleTitle", clickedElement.getTitle());
                 intent.putExtra("SectionName",sectionName);
                 long tStart = System.currentTimeMillis();
                 intent.putExtra("tStart",tStart);
@@ -160,7 +161,7 @@ public class MainFragment extends Fragment {
                 {
                     last_max_requested = max_index;
                     Log.e("E","AKR");
-                    HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + ToEng() + "/" + String.valueOf(max_index + 30), false, MainFragment.this);
+                    HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + ToEng() + "/" + String.valueOf(max_index + 12), false, MainFragment.this);
                     newClient.execute();
                 }
             }
