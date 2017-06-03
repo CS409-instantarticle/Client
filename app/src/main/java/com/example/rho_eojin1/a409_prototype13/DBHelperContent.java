@@ -61,12 +61,13 @@ public class DBHelperContent extends SQLiteOpenHelper {
                     ARTICLEID + " TEXT, " +
                     ARTICLETYPE + " TEXT, " +
                     ARTICLEINDEX + " INTEGER, " +
-                    CONTENT + " TEXT " +
+                    CONTENT + " TEXT, " +
                     /*
                      + "," +
                     LINKURL + "TEXT, " +
                     IMAGETAG + "TEXT " +
                     */
+                    "primary key (" + ARTICLEID +  "," + ARTICLEINDEX + ")" +
                     " )");
         }
     }

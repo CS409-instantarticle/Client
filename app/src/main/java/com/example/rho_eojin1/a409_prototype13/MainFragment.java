@@ -18,6 +18,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 /**
@@ -30,10 +31,32 @@ public class MainFragment extends Fragment {
     String sectionName;
     Context context;
     int last_requested = 0;
+    int last_max_requested = 0;
     int local_min_index = 0;
-    static int min_index = 0;
-    static int max_index = -1;
+    int local_max_index = 0;
+    int min_index = 0;
+    int max_index = -1;
     private boolean db_init = false;
+
+    private String ToEng()
+    {
+        if(this.sectionName.equals("홈"))
+            return "Home";
+        else if(this.sectionName.equals("정치"))
+            return "Politics";
+        else if(this.sectionName.equals("경제"))
+            return "Economy";
+        else if(this.sectionName.equals("사회"))
+            return "Society";
+        else if(this.sectionName.equals("생활"))
+            return "Life";
+        else if(this.sectionName.equals("세계"))
+            return "World";
+        else if(this.sectionName.equals("IT"))
+            return "IT";
+        else
+            return null;
+    }
 
     public MainFragment(Context context, String sectionName) {
         this.context = context;
@@ -45,7 +68,7 @@ public class MainFragment extends Fragment {
 
     public void getInitDB(){
         if(db_init == false){
-            HttpClient newClient = new HttpClient(this.context, "http://kaist.tk:1234/ArticleSection/" + sectionName + "/99999999", true, this);
+            HttpClient newClient = new HttpClient(this.context, "http://kaist.tk:1234/ArticleSection/" + ToEng() + "/99999999", true, this);
             newClient.execute();
             db_init = true;
         }else {
@@ -63,33 +86,42 @@ public class MainFragment extends Fragment {
         SQLiteDatabase dbMain = dbHelperMain.getReadableDatabase();
         Cursor cursor;
 
-        Log.e("Why section name wrong?", sectionName);
-        cursor = dbHelperMain.selectIndex(dbMain, sectionName, min_index - 1, local_min_index);
-
-        /*if (sectionName.equals("홈")) {
-            cursor = dbHelperMain.selectIndex(dbMain, min_index - 1, local_min_index);
-        } else {
-            cursor = dbHelperMain.selectSectionIndex(dbMain, sectionName, min_index - 1, local_min_index);
-        }*/
-
-        if(min_index < local_min_index)
+        if(min_index < local_min_index) {
+            cursor = dbHelperMain.selectIndex(dbMain, sectionName, min_index - 1, local_min_index);
             local_min_index = min_index - 1;
+
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                String article_id = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLEID));
+                String title = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLETITLE));
+                String thumbnail = cursor.getString(cursor.getColumnIndex(dbHelperMain.THUMBNAILIMAGEURL));
+                String press = cursor.getString(cursor.getColumnIndex(dbHelperMain.PRESS));
+
+                //Log.e("SectionArticleTitle", title);
+                main_list.add(new MainListElement(article_id,title,thumbnail,press));
+                cursor.moveToNext();
+            }
+        }
+        else if(max_index > local_max_index) {
+            cursor = dbHelperMain.selectIndex(dbMain, sectionName, local_max_index + 1, max_index);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                String article_id = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLEID));
+                String title = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLETITLE));
+                String thumbnail = cursor.getString(cursor.getColumnIndex(dbHelperMain.THUMBNAILIMAGEURL));
+                String press = cursor.getString(cursor.getColumnIndex(dbHelperMain.PRESS));
+
+                //Log.e("SectionArticleTitle", title);
+                main_list.add(0, new MainListElement(article_id,title,thumbnail,press));
+                cursor.moveToNext();
+            }
+
+            local_max_index = max_index;
+        }
         else
             return;
-
-        cursor.moveToFirst();
-
-        while (!cursor.isAfterLast()) {
-
-            String article_id = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLEID));
-            String title = cursor.getString(cursor.getColumnIndex(dbHelperMain.ARTICLETITLE));
-            String thumbnail = cursor.getString(cursor.getColumnIndex(dbHelperMain.THUMBNAILIMAGEURL));
-            String press = cursor.getString(cursor.getColumnIndex(dbHelperMain.PRESS));
-
-            //Log.e("SectionArticleTitle", title);
-            main_list.add(new MainListElement(article_id,title,thumbnail,press));
-            cursor.moveToNext();
-        }
 
         main_list_adapter.notifyDataSetChanged();
     }
@@ -121,14 +153,25 @@ public class MainFragment extends Fragment {
 
         main_list_view.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {}
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+                /* Scroll to the top */
+                if(absListView.getChildAt(0).getTop() == 0 && last_max_requested != max_index)
+                {
+                    last_max_requested = max_index;
+                    Log.e("E","AKR");
+                    HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + ToEng() + "/" + String.valueOf(max_index + 30), false, MainFragment.this);
+                    newClient.execute();
+                }
+            }
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                //Log.e("NUM1",String.valueOf(i));
-                //Log.e("NUM1",String.valueOf(i2));
-                //Log.e("NUM1",String.valueOf(i1));
-                //Log.e("NUM1",String.valueOf(last_requested));
-                //Log.e("NUM1",String.valueOf(min_index));
+                Log.e("NUM1",String.valueOf(i));
+                Log.e("NUM1",String.valueOf(i2));
+                Log.e("NUM1",String.valueOf(i1));
+                Log.e("NUM1",String.valueOf(last_requested));
+                Log.e("NUM1",String.valueOf(min_index));
+                Log.e("NUM1",String.valueOf(local_min_index));
+                Log.e("NUM1",String.valueOf(max_index));
                 if(i == i2 - i1 && last_requested != min_index && i2 != 0) {
                     //Log.e("NUM2",String.valueOf(i));
                     //Log.e("NUM2",String.valueOf(i2));
@@ -138,7 +181,7 @@ public class MainFragment extends Fragment {
 
                     last_requested = min_index;
                     //Log.e("Requested : ", "http://imgeffect.kaist.ac.kr:1234/ArticleList/" + String.valueOf(min_index - 30));
-                    HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + sectionName + "/" + String.valueOf(min_index - 1), false, MainFragment.this);
+                    HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + ToEng() + "/" + String.valueOf(min_index - 1), false, MainFragment.this);
                     newClient.execute();
                 }
             }

@@ -178,6 +178,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
             main_fragment.max_index = max_index;
             main_fragment.min_index = min_index;
             main_fragment.local_min_index = max_index;
+            main_fragment.local_max_index = max_index;
         }
         else
         {
@@ -188,7 +189,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
         //Log.e("index", "added, " + String.valueOf(max_index) + "," + String.valueOf(min_index));
         //main_fragment.max_index += 30;
         main_fragment.UpdateList();
-
+        main_fragment.last_max_requested = 0;
         super.onPostExecute(aVoid);
     }
 }

@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         DBHelperMain dbHelper = DBHelperMain.getInstance(getApplication());
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -83,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < sec_names.size(); ++i) {
             Log.e("Init_section", sec_names.get(i));
             MainFragment newFrag = new MainFragment(getApplicationContext(), sec_names.get(i));
+
+            /* Home section is requested only at the beginning */
             if(i == 0){
                 newFrag.getInitDB();
             }
