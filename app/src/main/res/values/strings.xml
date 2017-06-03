@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">409_Prototype1.3</string>
+    <string name="app_name">Naver Instant Article</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_content">ContentActivity</string>

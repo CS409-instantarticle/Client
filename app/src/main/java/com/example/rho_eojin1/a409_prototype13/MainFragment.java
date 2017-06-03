@@ -144,6 +144,7 @@ public class MainFragment extends Fragment {
 
                 Intent intent = new Intent(rootView.getContext(), ContentActivity2.class);
                 intent.putExtra("ArticleID",ID);
+                intent.putExtra("ArticleTitle", clickedElement.getTitle());
                 intent.putExtra("SectionName",sectionName);
                 long tStart = System.currentTimeMillis();
                 intent.putExtra("tStart",tStart);

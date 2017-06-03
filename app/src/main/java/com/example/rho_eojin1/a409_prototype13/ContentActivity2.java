@@ -53,6 +53,8 @@ public class ContentActivity2 extends AppCompatActivity {
         int width = display.widthPixels;
         int height = (3*width)/4;
 
+        getSupportActionBar().setTitle(intent.getExtras().getString("ArticleTitle"));
+
 
         //Log.e("ContentPage", articleID);
         //Log.e("ContentPage", sectionName);
