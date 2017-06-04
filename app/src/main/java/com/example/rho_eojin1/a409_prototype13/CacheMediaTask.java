@@ -1,6 +1,8 @@
 package com.example.rho_eojin1.a409_prototype13;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -19,13 +21,19 @@ import java.net.URL;
 
 public class CacheMediaTask extends AsyncTask<String, Void, Void> {
     private Context context;
+    private Bitmap bitmap;
+    String fileName;
+    boolean is_thumbnail = false;
 
-    public CacheMediaTask(Context context){
+    public CacheMediaTask(Context context, boolean is_thumbnail){
         this.context = context;
+        this.is_thumbnail = is_thumbnail;
     }
 
     @Override
     protected void onPostExecute(Void result) {
+        LRUcache.getInstance().addBitmapToMemoryCache(fileName, bitmap);
+        Log.e("Save Cache",fileName);
         super.onPostExecute(result);
     }
 
@@ -44,13 +52,24 @@ public class CacheMediaTask extends AsyncTask<String, Void, Void> {
             urlConnection.setDoOutput(true);
             urlConnection.connect();
 
-            String fileName = Uri.parse(image_URL).getLastPathSegment();
+            fileName = Uri.parse(image_URL).getLastPathSegment();
             if(fileName.equals("None")){
                 return null;
             }
 
+            InputStream is = urlConnection.getInputStream();
 
-            File file = new File(this.context.getCacheDir(), fileName);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            if (is_thumbnail) {
+                options.inSampleSize = 1;
+            }else{
+                options.inSampleSize = 1;
+            }
+
+            bitmap = BitmapFactory.decodeStream(is);
+
+
+            /*File file = new File(this.context.getCacheDir(), fileName);
             //Log.e("fileName", file.getAbsolutePath());
             FileOutputStream fileOutput = new FileOutputStream(file);
 
@@ -66,7 +85,7 @@ public class CacheMediaTask extends AsyncTask<String, Void, Void> {
                 fileOutput.write(buffer, 0, bufferLength);
                 downloadedSize += bufferLength;
             }
-            fileOutput.close();
+            fileOutput.close();*/
 
             //Log.e("complete", "done");
         } catch (MalformedURLException e) {

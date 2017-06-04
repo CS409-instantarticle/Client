@@ -175,7 +175,7 @@ public class HttpClient extends AsyncTask<Void,Void,Void>{
                                         contentValues.put(dbHelperContent.ARTICLEID, oneArticle.getString(dbHelperContent.ARTICLEID));
                                         contentValues.put(dbHelperContent.ARTICLETYPE, oneContent.getString(dbHelperContent.ARTICLETYPE));
                                         if (oneContent.getString(dbHelperContent.ARTICLETYPE).equals("image")) {
-                                            CacheMediaTask cacheTask = new CacheMediaTask(context);
+                                            CacheMediaTask cacheTask = new CacheMediaTask(context, true);
                                             cacheTask.execute(oneContent.getString(dbHelperContent.CONTENT));
                                         }
                                         contentValues.put(dbHelperContent.ARTICLEINDEX, oneContent.getString(dbHelperContent.ARTICLEINDEX));

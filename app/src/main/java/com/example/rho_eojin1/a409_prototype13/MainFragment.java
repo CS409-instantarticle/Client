@@ -160,20 +160,20 @@ public class MainFragment extends Fragment {
                 if(absListView.getChildAt(0).getTop() == 0 && last_max_requested != max_index)
                 {
                     last_max_requested = max_index;
-                    Log.e("E","AKR");
+                    //Log.e("E","AKR");
                     HttpClient newClient = new HttpClient(context, "http://kaist.tk:1234/ArticleSection/" + ToEng() + "/" + String.valueOf(max_index + 12), false, MainFragment.this);
                     newClient.execute();
                 }
             }
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                Log.e("NUM1",String.valueOf(i));
-                Log.e("NUM1",String.valueOf(i2));
-                Log.e("NUM1",String.valueOf(i1));
-                Log.e("NUM1",String.valueOf(last_requested));
-                Log.e("NUM1",String.valueOf(min_index));
-                Log.e("NUM1",String.valueOf(local_min_index));
-                Log.e("NUM1",String.valueOf(max_index));
+                //Log.e("NUM1",String.valueOf(i));
+                //Log.e("NUM1",String.valueOf(i2));
+                //Log.e("NUM1",String.valueOf(i1));
+                //Log.e("NUM1",String.valueOf(last_requested));
+                //Log.e("NUM1",String.valueOf(min_index));
+                //Log.e("NUM1",String.valueOf(local_min_index));
+                //Log.e("NUM1",String.valueOf(max_index));
                 if(i == i2 - i1 && last_requested != min_index && i2 != 0) {
                     //Log.e("NUM2",String.valueOf(i));
                     //Log.e("NUM2",String.valueOf(i2));
