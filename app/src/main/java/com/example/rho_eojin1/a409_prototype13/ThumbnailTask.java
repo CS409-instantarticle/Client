@@ -1,8 +1,6 @@
 package com.example.rho_eojin1.a409_prototype13;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -22,9 +20,8 @@ import java.net.URL;
 
 public class ThumbnailTask extends AsyncTask<String, Void, Void> {
     private Context context;
-    Bitmap bitmap = null;
     private ImageView imageView;
-    //File file = null;
+    File file = null;
 
     public ThumbnailTask(Context context, ImageView imageView){
         this.context = context;
@@ -35,14 +32,8 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
         //Log.e("Thread_Often","True");
-        if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
-
-            //BitmapFactory.Options options = new BitmapFactory.Options();
-            //options.inSampleSize = 4;
-            //Bitmap orgImage = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-
-            //imageView.setImageBitmap(orgImage);
+        if (file != null) {
+            imageView.setImageURI(Uri.fromFile(file));
         }else {
             imageView.setImageResource(R.drawable.ic_launcher);
         }
@@ -60,32 +51,9 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
             return null;
         }
 
-        //file = new File(this.context.getCacheDir(), fileName);
+        file = new File(this.context.getCacheDir(), fileName);
         //Log.e("fileName", file.getAbsolutePath());
-        bitmap = LRUcache.getInstance().getBitmapFromMemCache(fileName);
-        //Log.e("Get Cache", fileName);
-        if (bitmap == null){
-            try {
-                URL url = new URL(image_URL);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setDoOutput(true);
-                urlConnection.connect();
-                InputStream is = urlConnection.getInputStream();
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 4;
-                bitmap = BitmapFactory.decodeStream(is);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-        }else
-        {
-            return null;
-        }
-        /*if (file.exists()){
+        if (file.exists()){
             Log.e("File_Exists","True");
             return null;
         }else {
@@ -126,7 +94,6 @@ public class ThumbnailTask extends AsyncTask<String, Void, Void> {
                 e.printStackTrace();
             }
             return null;
-        }*/
-        return null;
+        }
     }
 }
